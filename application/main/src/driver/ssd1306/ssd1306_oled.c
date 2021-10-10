@@ -83,7 +83,8 @@ const uint8_t ssd1306_init_commands[] = {
     SSD1306_DISPLAYON, /* display ON */
 };
 
-uint8_t ssd1306_display_buffer[128 * 4] = SSD1306_INIT_BUFF;
+//uint8_t ssd1306_display_buffer[128 * 4] = SSD1306_INIT_BUFF;
+uint8_t ssd1306_display_buffer[128 * 4] = {0};
 
 /**
  * @brief 发送命令或数据
