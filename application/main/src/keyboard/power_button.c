@@ -34,8 +34,8 @@ uint8_t button_count = 0;
 
 /**
  * @brief power button按键处理
- * 
- * @param p_context 
+ *
+ * @param p_context
  */
 static void button_handler(void)
 {
@@ -68,7 +68,9 @@ static void button_handler(void)
 
 /**
 * @brief 初始化POWER_BUTTON按钮
- * 
+ *@唤醒机制：sleep 模式为SLEEP_MANUALLY_NO_MATRIX_WAKEUP,
+ *休眠前所有轴体使用的按键均被default，只有POWER_BUTTON设置为了NRF_GPIO_PIN_SEN_LOW,
+ *因此只需再按一次POWER_BUTTON按钮即可reset，reset后重新检查bootmagic
  */
 void buttons_init(void)
 {
