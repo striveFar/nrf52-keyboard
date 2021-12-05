@@ -122,8 +122,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define UART_BAUDRATE NRF_UART_BAUDRATE_115200 // 通信波特率，请不要修改
 
 // OLED 屏幕配置
-#define SSD1306_SDA 3
-#define SSD1306_SCL 4
+#define SSD1306_SDA 4
+#define SSD1306_SCL 3
 #define SSD1306_ROTATE_180 // 旋转屏幕
 
 // 旋钮配置
