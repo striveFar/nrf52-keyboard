@@ -142,6 +142,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PIN_CHARGING !UCC1 // CH554的充电检测。当UCC1拉低时表示正在充电
 #define PIN_STANDBY !UCC2 // CH554的充电检测。当UCC2拉低时表示充电完成。若不配置则只使用PIN_CHARGING作为是否充电的检测标志
 
+// WPM字符速度统计配置
+#define WPM_ALLOW_COUNT_REGRESSION //允许 Del BASP 倒退
+
 
 // 按键阵列配置,目前仍剩余：24, 28, 31
 static const uint8_t row_pin_array[MATRIX_ROWS] = { 5, 6, 7, 8, 9, 11, 12, 13, 14, 15 };

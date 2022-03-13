@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
-
+#define	 BIT(nr)	(1 << nr)
 /**
  * @brief 用户事件类型
  * 
@@ -66,7 +66,14 @@ enum user_event {
      * @brief 键盘灯光改变事件
      * 参数值是灯光值本身
      */
-    USER_EVT_LED
+    USER_EVT_LED,
+    /**
+     * @brief 键入速度
+     * 参数值是速度值本身
+     */
+#ifdef WPM_ENABLE
+    USER_EVT_WPM
+#endif
 };
 
 /**
@@ -163,8 +170,11 @@ enum hid_protocol_type {
  * 省电事件状态
  */
 enum power_save_mode {
-    PWR_SAVE_ON, // 启用省电模式
-    PWR_SAVE_OFF, // 禁用省电模式
-    PWR_SAVE_ENTER, // 进入省电模式
-    PWR_SAVE_EXIT, // 退出省电模式
+    PWR_SAVE_ON	= BIT(1), // 启用省电模式
+    PWR_SAVE_OFF = BIT(2), // 禁用省电模式
+    PWR_SAVE_ENTER = BIT(3), // 进入省电模式
+    PWR_SAVE_EXIT = BIT(4), // 退出省电模式
+#ifdef WPM_ENABLE
+    PWR_SAVE_WPM_AUTO = BIT(5), // 仅让OLED退出省电模式
+#endif
 };

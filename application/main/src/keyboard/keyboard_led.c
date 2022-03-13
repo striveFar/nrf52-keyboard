@@ -114,16 +114,15 @@ static void led_event_handler(enum user_event event, void* arg)
 {
     switch (event) {
     case USER_EVT_POWERSAVE:
-        switch ((uint32_t)arg) {
-        case PWR_SAVE_ENTER:
+        if ((uint32_t)arg & PWR_SAVE_ENTER)
             led_off();
-            break;
-        case PWR_SAVE_EXIT:
-            led_on();
-            break;
-        default:
-            break;
-        }
+	/* PWR_SAVE_WPM_AUTO 时防止指示灯常亮 */
+        if (((uint32_t)arg & PWR_SAVE_EXIT)
+#ifdef WPM_ENABLE
+	    && !((uint32_t)arg & PWR_SAVE_WPM_AUTO)
+#endif
+	    )
+	    led_on();
         break;
     default:
         break;

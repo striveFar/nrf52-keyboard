@@ -85,3 +85,7 @@ endif
 ifeq (yes,$(strip $(RGBLIGHT_ENABLE)))
     OPT_DEFS += -DRGBLIGHT_ENABLE
 endif
+ifeq (yes,$(strip $(WPM_ENABLE)))
+    SRC_FILES += $(APP_SRC_DIR)/tmk/wpm.c
+    OPT_DEFS +=  -DWPM_ENABLE
+endif

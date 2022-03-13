@@ -31,6 +31,7 @@ SSD1306_OLED = yes # 启用OLED
 ROTARY_ENCODER = yes # 启用编码器
 #ONBOARD_CMSIS_DAP = yes # 启用板载调试器
 
+WPM_ENABLE = yes #启用打字速度统计
 
 ########## STOP HERE ##########
 # 除非你知道下面这些配置项是干什么的，否则不要去动它

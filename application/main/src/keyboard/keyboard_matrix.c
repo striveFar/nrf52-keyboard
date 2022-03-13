@@ -36,6 +36,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "print.h"
 #include "util.h"
 #include "wait.h"
+#include "wpm.h"
 
 #ifndef DEBOUNCE
 #define DEBOUNCE 1
@@ -169,6 +170,10 @@ uint8_t matrix_scan(void)
             }
         }
     }
+
+#ifdef WPM_ENABLE
+    decay_wpm();
+#endif
 
     return 1;
 }

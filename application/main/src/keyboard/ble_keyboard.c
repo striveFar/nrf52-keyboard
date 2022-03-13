@@ -32,6 +32,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "usb_comm.h"
 
 #include "nrf_drv_wdt.h"
+#include "wpm.h"
+#include "power_save.h"
 
 APP_TIMER_DEF(m_keyboard_scan_timer); /**< keyboard scan timer. */
 APP_TIMER_DEF(m_keyboard_debounce_timer); /**< keyboard debounce timer. */
@@ -43,6 +45,8 @@ APP_TIMER_DEF(m_keyboard_sleep_timer); /**< keyboard sleep timer. */
 #define TICK_INTERVAL APP_TIMER_TICKS(1000) /**< 键盘Tick计时器 */
 
 static uint32_t sleep_counter;
+/* powersave = 0; 有线连接，非省电模式 */
+/* powersave = 1; 无线连接，开启省电模式 */
 static bool powersave = true;
 
 /**
@@ -102,6 +106,14 @@ static void keyboard_sleep_handler(void* p_context)
 
     // trig TICK
     trig_event(USER_EVT_TICK, 0);
+#ifdef WPM_ENABLE
+    uint8_t current_wpm = get_current_wpm();
+    if (current_wpm) {
+	    power_save_oled_reset();
+	    /* for debug WPM */
+	    //trig_event(USER_EVT_WPM, (void *)(uint32_t)current_wpm);
+    }
+#endif
 }
 
 /**

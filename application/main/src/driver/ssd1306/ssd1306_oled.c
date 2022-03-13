@@ -27,8 +27,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "events.h"
 #include "keyboard_evt.h"
 #include "passkey.h"
+#include "wpm.h"
 #include "power_save.h"
 #include "queue.h"
+#include "action.h"
 
 #include "i2c/shared_i2c.h"
 
@@ -238,7 +240,10 @@ static void status_mark_dirty()
 }
 
 static bool ssd1306_inited = false;
-
+#ifdef WPM_ENABLE
+// WPM char to display
+static char wpm_str[10];
+#endif
 static void ssd1306_event_handler(enum user_event event, void* arg)
 {
     uint8_t param = (uint32_t)arg;
@@ -265,16 +270,10 @@ static void ssd1306_event_handler(enum user_event event, void* arg)
         }
         break;
     case USER_EVT_POWERSAVE: // 处理省电模式
-        switch (param) {
-        case PWR_SAVE_ENTER:
+        if (param & PWR_SAVE_ENTER)
             ssd1306_sleep();
-            break;
-        case PWR_SAVE_EXIT:
+        if (param & PWR_SAVE_EXIT)
             ssd1306_wake();
-            break;
-        default:
-            break;
-        }
         break;
     case USER_EVT_CHARGE: // 充电状态
         pwr_attach = (param != BATT_NOT_CHARGING);
@@ -304,6 +303,13 @@ static void ssd1306_event_handler(enum user_event event, void* arg)
         keyboard_led = param;
         status_mark_dirty();
         break;
+#ifdef WPM_ENABLE
+    case USER_EVT_WPM: //键入速度显示
+	    sprintf(wpm_str, "WPM: %03d", param);
+	    oled_draw_text_16(2, TEXT_ALIGN_LEFT, 0, (const char*)wpm_str);
+	    ssd1306_show_dirty_block();
+        break;
+#endif
     default:
         break;
     }

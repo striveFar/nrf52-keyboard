@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "wpm.h"
 #include "power_save.h"
 #include "keyboard_evt.h"
 #include "store_config.h"
@@ -35,6 +36,8 @@ static void notify_mode(enum power_save_mode mode)
  * 
  * @param on 
  */
+//on = 0; 有线连接，不是省电模式
+//on = 1; 无线，开启省点模式
 void power_save_set_mode(bool on)
 {
     if (tick_counter)
@@ -53,22 +56,47 @@ void power_save_set_mode(bool on)
  * @brief 启动自动关闭计时器
  * 
  */
-void power_save_reset()
+void power_save_reset(void)
 {
     if (power_save_mode) {
         // 若当前已经处于睡眠模式,则触发退出事件
         if (!tick_counter)
-            notify_mode(PWR_SAVE_EXIT);
+	     notify_mode(PWR_SAVE_EXIT);
 
-        // 重设计数器
-        tick_counter = get_led_powersave_timeout();
+         tick_counter = get_led_powersave_timeout();
     }
 }
 
+#ifdef WPM_ENABLE
+/**
+ * @brief 重新启动自动关闭计时器,且仅通知屏幕退出省电模式,
+ * 防止有连续敲击事件时指示灯常亮
+ *
+ */
+void power_save_oled_reset(void)
+{
+    if (power_save_mode) {
+        // 若当前已经处于睡眠模式,则触发退出事件
+        if (!tick_counter)
+	    notify_mode(PWR_SAVE_EXIT | PWR_SAVE_WPM_AUTO);
+
+         tick_counter = get_led_powersave_timeout();
+    }
+}
+#endif
+
+/**
+ * @brief 秒定时处理,到达省电时间后触发省电模式
+ * 若开启WPM_ENABLE,则到达省电时间后且WPM为零时触发省电模式
+ */
 static void ps_event_handler(enum user_event event, void* arg)
 {
     if (event == USER_EVT_TICK) {
-        if (power_save_mode && tick_counter) {
+        if (power_save_mode && tick_counter
+#ifdef WPM_ENABLE
+	    && !get_current_wpm()
+#endif
+	   ) {
             tick_counter--;
             // 时间到了,触发省电模式
             if (tick_counter == 0)
