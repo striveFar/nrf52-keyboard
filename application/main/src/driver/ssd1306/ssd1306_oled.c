@@ -82,7 +82,6 @@ const uint8_t ssd1306_init_commands[] = {
     SSD1306_PAGEADDR,
     0x00,
     0x03,
-    SSD1306_DISPLAYON, /* display ON */
 };
 
 //uint8_t ssd1306_display_buffer[128 * 4] = SSD1306_INIT_BUFF;
@@ -258,6 +257,7 @@ static void ssd1306_event_handler(enum user_event event, void* arg)
         case KBD_STATE_INITED: // 显示Buff
             update_status_bar();
             ssd1306_show_all();
+	    ssd1306_wake();
             break;
         case KBD_STATE_SLEEP: // 睡眠
             if (ssd1306_inited) {
