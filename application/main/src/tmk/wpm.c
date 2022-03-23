@@ -84,7 +84,7 @@ __attribute__((weak)) uint8_t wpm_regress_count(uint16_t keycode) {
 void update_wpm(uint16_t keycode) {
     if (wpm_keycode(keycode)) {
         if (wpm_timer > 0) {
-            current_wpm += ((60000 / timer_elapsed(wpm_timer) / WPM_ESTIMATED_WORD_SIZE) - current_wpm) * wpm_smoothing;
+            current_wpm += ((1000 / timer_elapsed(wpm_timer) / WPM_ESTIMATED_WORD_SIZE) - current_wpm) * wpm_smoothing;
 	    if(current_wpm > 255)
 		    current_wpm = 255;
         }

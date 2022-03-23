@@ -24,10 +24,12 @@
 #include "keyboard.h"
 
 #ifndef WPM_ESTIMATED_WORD_SIZE
-#    define WPM_ESTIMATED_WORD_SIZE 5
+#    define WPM_ESTIMATED_WORD_SIZE 1
 #endif
 #ifndef WPM_SMOOTHING
-#    define WPM_SMOOTHING 0.0487
+//#    define WPM_SMOOTHING 0.0487
+//#    define WPM_SMOOTHING 0.9
+#    define WPM_SMOOTHING 0.75
 #endif
 
 bool wpm_keycode(uint16_t keycode);

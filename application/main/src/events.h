@@ -72,7 +72,15 @@ enum user_event {
      * 参数值是速度值本身
      */
 #ifdef WPM_ENABLE
-    USER_EVT_WPM
+    USER_EVT_WPM,
+#endif
+
+    /**
+     * @brief 动画显示
+     * 参数值是速度值本身
+     */
+#ifdef ANIMATION_ENABLE
+    USER_EVT_ANIM,
 #endif
 };
 
@@ -177,4 +185,13 @@ enum power_save_mode {
 #ifdef WPM_ENABLE
     PWR_SAVE_WPM_AUTO = BIT(5), // 仅让OLED退出省电模式
 #endif
+};
+
+
+/**
+ * 省电事件状态
+ */
+enum anim_play_state {
+    ANIM_STOP, //停止动画显示
+    ANIM_START, //开启动画显示
 };

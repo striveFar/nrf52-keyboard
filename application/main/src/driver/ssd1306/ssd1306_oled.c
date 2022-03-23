@@ -31,6 +31,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "power_save.h"
 #include "queue.h"
 #include "action.h"
+#include "app_util_platform.h"
 
 #include "i2c/shared_i2c.h"
 
@@ -38,6 +39,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #define SSD1306_ADDR 0x3C
 static nrfx_twi_t* twi_channel;
+#ifdef ANIMATION_ENABLE
+extern bool anim_play_mode;
+#endif
 
 /**
  * @brief SSD1306的显示屏初始化命令
@@ -139,10 +143,29 @@ void ssd1306_show_buff(uint8_t row, uint8_t col_start, uint8_t len)
 }
 
 /**
+ * @brief 直接显示指定的Buff
+ *
+ * @param P 图像数组首地址
+ * @param len 显示长度
+ */
+void ssd1306_write_raw_P(const uint8_t *P)
+{
+    if (NULL == P)
+        return;
+    else {
+        for (uint8_t row = 0; row < SSD1306_ROWS; row++) {
+	     uint8_t commands[] = { 0xB0 + row, 0x00, 0x10 };
+	     ssd1306_write(true, sizeof(commands), commands);
+	     ssd1306_write(false, SSD1306_COLS, &P[row * 128]);
+        }
+    }
+}
+
+/**
  * @brief 显示Buff里面的所有内容
  * 
  */
-static void ssd1306_show_all()
+void ssd1306_show_all()
 {
     for (uint8_t i = 0; i < SSD1306_ROWS; i++) {
         ssd1306_show_buff(i, 0, SSD1306_COLS);
@@ -208,7 +231,7 @@ void ssd1306_show_dirty_block()
  * @brief 更新状态栏
  * 
  */
-static void update_status_bar()
+void update_status_bar()
 {
     power_save_reset();
 
@@ -243,6 +266,11 @@ static bool ssd1306_inited = false;
 // WPM char to display
 static char wpm_str[10];
 #endif
+
+#ifdef ANIMATION_ENABLE
+extern bool anim_play_mode;
+extern void anim_timer_stop(void);
+#endif
 static void ssd1306_event_handler(enum user_event event, void* arg)
 {
     uint8_t param = (uint32_t)arg;
@@ -255,12 +283,17 @@ static void ssd1306_event_handler(enum user_event event, void* arg)
             ssd1306_inited = true;
             break;
         case KBD_STATE_INITED: // 显示Buff
-            update_status_bar();
+	    ssd1306_clr();
             ssd1306_show_all();
-	    ssd1306_wake();
+            update_status_bar();
+            ssd1306_wake();
             break;
         case KBD_STATE_SLEEP: // 睡眠
             if (ssd1306_inited) {
+#ifdef ANIMATION_ENABLE
+	    anim_timer_stop();
+	    anim_play_mode = false;
+#endif
                 ssd1306_sleep();
                 nrf_delay_ms(10);
             }
@@ -275,16 +308,32 @@ static void ssd1306_event_handler(enum user_event event, void* arg)
         if (param & PWR_SAVE_EXIT)
             ssd1306_wake();
         break;
+
     case USER_EVT_CHARGE: // 充电状态
         pwr_attach = (param != BATT_NOT_CHARGING);
+#ifdef ANIMATION_ENABLE
+if(!anim_play_mode) {
+#endif
         status_mark_dirty();
+#ifdef ANIMATION_ENABLE
+}
+#endif
         break;
     case USER_EVT_USB: // USB状态
         usb_conn = (param == USB_WORKING);
+#ifdef ANIMATION_ENABLE
+if(!anim_play_mode) {
+#endif
         status_mark_dirty();
+#ifdef ANIMATION_ENABLE
+}
+#endif
         break;
     case USER_EVT_BLE_PASSKEY_STATE: // 配对码状态
         passkey_req = (param != PASSKEY_STATE_SEND);
+#ifdef ANIMATION_ENABLE
+if(!anim_play_mode) {
+#endif
         if (param == PASSKEY_STATE_INPUT) {
             // 显示输入的配对码
             oled_draw_text_16(2, TEXT_ALIGN_CENTER, 0, (const char*)passkey);
@@ -294,20 +343,41 @@ static void ssd1306_event_handler(enum user_event event, void* arg)
             oled_clear_row(3);
         }
         status_mark_dirty();
+#ifdef ANIMATION_ENABLE
+}
+#endif
         break;
     case USER_EVT_BLE_STATE_CHANGE: // 蓝牙状态
         ble_conn = (param == BLE_STATE_CONNECTED);
+#ifdef ANIMATION_ENABLE
+if(!anim_play_mode) {
+#endif
         status_mark_dirty();
+#ifdef ANIMATION_ENABLE
+}
+#endif
         break;
     case USER_EVT_LED: // 键盘灯状态
-        keyboard_led = param;
-        status_mark_dirty();
+            keyboard_led = param;
+#ifdef ANIMATION_ENABLE
+if(!anim_play_mode) {
+#endif
+            status_mark_dirty();
+#ifdef ANIMATION_ENABLE
+}
+#endif
         break;
 #ifdef WPM_ENABLE
     case USER_EVT_WPM: //键入速度显示
 	    sprintf(wpm_str, "WPM: %03d", param);
+#ifdef ANIMATION_ENABLE
+if(!anim_play_mode) {
+#endif
 	    oled_draw_text_16(2, TEXT_ALIGN_LEFT, 0, (const char*)wpm_str);
 	    ssd1306_show_dirty_block();
+#ifdef ANIMATION_ENABLE
+}
+#endif
         break;
 #endif
     default:

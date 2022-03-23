@@ -27,6 +27,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "ble_services.h"
 #include "ble_bas_service.h"
 
+#ifdef ANIMATION_ENABLE
+#include "oled_anim.h"
+extern bool anim_play_mode;
+#endif
+
 #ifdef NKRO_ENABLE
 
 #ifdef BOOTMAGIC_ENABLE
@@ -68,6 +73,13 @@ __attribute__((weak)) void action_function(keyrecord_t* record, uint8_t id, uint
             case CONTROL_BATTERY_PERCENTAGE: // 输出电池剩余电量
                 print_battery_percentage();
                 break;
+#ifdef ANIMATION_ENABLE
+	    case CONTROL_ANIM_PLAY: // 动画显示开关
+		anim_play_mode = !anim_play_mode;
+		trig_event_param(USER_EVT_ANIM,
+				 anim_play_mode ? ANIM_START : ANIM_STOP);
+                break;
+#endif
             default:
                 break;
             }

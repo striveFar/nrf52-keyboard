@@ -47,6 +47,10 @@ extern uint8_t ssd1306_display_buffer[];
 extern bool ssd1306_buff_dirty[SSD1306_ROWS];
 void ssd1306_show_buff(uint8_t row, uint8_t col_start, uint8_t len);
 void ssd1306_show_dirty_block();
+void ssd1306_clr();
+void ssd1306_show_all();
+void update_status_bar();
+void ssd1306_write_raw_P(const uint8_t *P);
 
 #ifndef SSD1306_INIT_BUFF
 #define SSD1306_INIT_BUFF {\

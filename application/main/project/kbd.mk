@@ -50,6 +50,12 @@ ifeq (yes,$(strip $(CONFIG_GPIO_AS_PINRESET)))
     OPT_DEFS += -DCONFIG_GPIO_AS_PINRESET
 endif
 
+# add animation play 
+ifeq (yes,$(strip $(ANIMATION_ENABLE)))
+    SRC_FILES += $(APP_SRC_DIR)/keyboard/oled_anim.c
+    OPT_DEFS += -DANIMATION_ENABLE
+endif
+
 include $(APP_PROJ_DIR)/tmk.mk
 include $(APP_PROJ_DIR)/driver.mk
 include $(APP_PROJ_DIR)/app.mk

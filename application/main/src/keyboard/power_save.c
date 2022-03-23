@@ -61,7 +61,11 @@ void power_save_reset(void)
     if (power_save_mode) {
         // 若当前已经处于睡眠模式,则触发退出事件
         if (!tick_counter)
-	     notify_mode(PWR_SAVE_EXIT);
+	     notify_mode(PWR_SAVE_EXIT
+#ifdef WPM_ENABLE
+			| PWR_SAVE_WPM_AUTO
+#endif
+			 );
 
          tick_counter = get_led_powersave_timeout();
     }

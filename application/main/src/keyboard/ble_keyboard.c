@@ -32,17 +32,24 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "usb_comm.h"
 
 #include "nrf_drv_wdt.h"
+#ifdef WPM_ENABLE
 #include "wpm.h"
+#endif
 #include "power_save.h"
+#ifdef ANIMATION_ENABLE
+#include "oled_anim.h"
+#endif
 
 APP_TIMER_DEF(m_keyboard_scan_timer); /**< keyboard scan timer. */
 APP_TIMER_DEF(m_keyboard_debounce_timer); /**< keyboard debounce timer. */
 APP_TIMER_DEF(m_keyboard_sleep_timer); /**< keyboard sleep timer. */
 
+
 #define FAST_SCAN_INTERVAL APP_TIMER_TICKS(KEYBOARD_FAST_SCAN_INTERVAL)
 #define SLOW_SCAN_INTERVAL APP_TIMER_TICKS(KEYBOARD_SLOW_SCAN_INTERVAL)
 #define DEBOUNCE_INTERVAL APP_TIMER_TICKS(KEYBOARD_SCAN_INTERVAL)
 #define TICK_INTERVAL APP_TIMER_TICKS(1000) /**< 键盘Tick计时器 */
+
 
 static uint32_t sleep_counter;
 /* powersave = 0; 有线连接，非省电模式 */
@@ -111,10 +118,11 @@ static void keyboard_sleep_handler(void* p_context)
     if (current_wpm) {
 	    power_save_oled_reset();
 	    /* for debug WPM */
-	    //trig_event(USER_EVT_WPM, (void *)(uint32_t)current_wpm);
+	    trig_event(USER_EVT_WPM, (void *)(uint32_t)current_wpm);
     }
 #endif
 }
+
 
 /**
  * @brief 重置睡眠定时器
@@ -206,6 +214,7 @@ void ble_keyboard_timer_start(void)
 
     err_code = app_timer_start(m_keyboard_sleep_timer, TICK_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
+
 }
 
 /**
@@ -240,6 +249,9 @@ void ble_keyboard_init(void)
     // - matrix_init();
     host_set_driver(&driver); // 设置 host driver
     keyboard_timer_init(); // 初始化计时器
+#ifdef ANIMATION_ENABLE
+    anim_timer_init();
+#endif
     macro_play_timer_init(); // 初始化宏计数器
 #ifdef ENABLE_WATCHDOG
     keyboard_wdt_init(); // 初始化看门狗
