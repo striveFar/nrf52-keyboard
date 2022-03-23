@@ -118,7 +118,7 @@ static void keyboard_sleep_handler(void* p_context)
     if (current_wpm) {
 	    power_save_oled_reset();
 	    /* for debug WPM */
-	    trig_event(USER_EVT_WPM, (void *)(uint32_t)current_wpm);
+	    //trig_event(USER_EVT_WPM, (void *)(uint32_t)current_wpm);
     }
 #endif
 }

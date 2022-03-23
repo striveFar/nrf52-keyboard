@@ -60,7 +60,14 @@ __attribute__((weak)) void action_function(keyrecord_t* record, uint8_t id, uint
         case KEYBOARD_CONTROL:
             switch (opt) {
             case CONTROL_SLEEP: // 睡眠
+#ifdef ANIMATION_ENABLE
+	    /* 规定在动画模式下无法关机 */
+	    if (!anim_play_mode) {
+#endif
                 sleep(SLEEP_MANUALLY);
+#ifdef ANIMATION_ENABLE
+	    }
+#endif
                 break;
             case CONTROL_NKRO: // 切换NKRO
 #ifdef NKRO_ENABLE

@@ -51,6 +51,7 @@ void ssd1306_clr();
 void ssd1306_show_all();
 void update_status_bar();
 void ssd1306_write_raw_P(const uint8_t *P);
+void ssd1306_sleep();
 
 #ifndef SSD1306_INIT_BUFF
 #define SSD1306_INIT_BUFF {\

@@ -32,6 +32,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifdef POWER_BUTTON
 uint8_t button_count = 0;
 
+#ifdef ANIMATION_ENABLE
+extern bool anim_play_mode;
+#endif
+
 /**
  * @brief power button按键处理
  *
@@ -40,29 +44,32 @@ uint8_t button_count = 0;
 static void button_handler(void)
 {
 
-    if (!nrf_gpio_pin_read(POWER_BUTTON)) //如果BUTTON输入低电平(按下)，则启动计数
+    if(!anim_play_mode)
     {
-        button_count++;
-        return;
-    } else {
-        //1~4秒关机
-        if (button_count > 1 && button_count <= 4) {
-            button_count = 0;
-            sleep(SLEEP_MANUALLY_NO_MATRIX_WAKEUP);
+        if (!nrf_gpio_pin_read(POWER_BUTTON)) //如果BUTTON输入低电平(按下)，则启动计数
+        {
+            button_count++;
+            return;
+        } else {
+            //1~4秒关机
+            if (button_count > 1 && button_count <= 4) {
+                button_count = 0;
+                sleep(SLEEP_MANUALLY_NO_MATRIX_WAKEUP);
+            }
+            //5~9秒启动DFU
+            if (button_count > 4 && button_count <= 9) {
+                button_count = 0;
+                bootloader_jump();
+            }
+            //10秒以上重置
+            if (button_count >= 10) {
+                button_count = 0;
+                delete_bonds();
+                storage_delete(0x0F);
+                storage_read(0x0F);
+            }
+            //上述判断最大误差1秒
         }
-        //5~9秒启动DFU
-        if (button_count > 4 && button_count <= 9) {
-            button_count = 0;
-            bootloader_jump();
-        }
-        //10秒以上重置
-        if (button_count >= 10) {
-            button_count = 0;
-            delete_bonds();
-            storage_delete(0x0F);
-            storage_read(0x0F);
-        }
-        //上述判断最大误差1秒
     }
 }
 

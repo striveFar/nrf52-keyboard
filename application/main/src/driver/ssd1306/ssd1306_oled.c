@@ -185,7 +185,7 @@ void ssd1306_clr()
  * @brief 进入睡眠状态
  * 
  */
-static void ssd1306_sleep()
+void ssd1306_sleep()
 {
     uint8_t cmd = SSD1306_DISPLAYOFF;
     ssd1306_write(true, 1, &cmd);
@@ -267,10 +267,6 @@ static bool ssd1306_inited = false;
 static char wpm_str[10];
 #endif
 
-#ifdef ANIMATION_ENABLE
-extern bool anim_play_mode;
-extern void anim_timer_stop(void);
-#endif
 static void ssd1306_event_handler(enum user_event event, void* arg)
 {
     uint8_t param = (uint32_t)arg;
@@ -290,10 +286,6 @@ static void ssd1306_event_handler(enum user_event event, void* arg)
             break;
         case KBD_STATE_SLEEP: // 睡眠
             if (ssd1306_inited) {
-#ifdef ANIMATION_ENABLE
-	    anim_timer_stop();
-	    anim_play_mode = false;
-#endif
                 ssd1306_sleep();
                 nrf_delay_ms(10);
             }

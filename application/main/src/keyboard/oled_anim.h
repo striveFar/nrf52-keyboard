@@ -19,7 +19,7 @@
 #define TAP_FRAMES 2
 #define TAP_SPEED 10 // above this wpm value typing animation to triggere
 
-#define ANIM_SIZE 636 // number of bytes in array, minimize for adequate firmware size, max is 1024
+#define ANIM_SIZE 512 // number of bytes in array, minimize for adequate firmware size, max is 1024
 
 void anim_timer_init(void);
 void anim_timer_stop(void);
