@@ -33,11 +33,11 @@ static void notify_mode(enum power_save_mode mode)
 
 /**
  * @brief 设置省电模式状态
- * 
- * @param on 
+ *
+ * @param on
+ * on = 0; 有线连接，不是省电模式
+ * on = 1; 无线，开启省点模式
  */
-//on = 0; 有线连接，不是省电模式
-//on = 1; 无线，开启省点模式
 void power_save_set_mode(bool on)
 {
     if (tick_counter)
@@ -54,7 +54,11 @@ void power_save_set_mode(bool on)
 
 /**
  * @brief 启动自动关闭计时器
- * 
+ * @brief 重新启动自动关闭计时器,且仅通知屏幕退出省电模式,
+ * 防止有连续敲击事件时指示灯常亮,指示灯状态直接通过屏幕进行持续反馈，
+ * 防止增加无意义的耗电项目
+ * @作用: 1. 处于睡眠模式则通知各个事件处理处理器退出睡眠模式
+ *	  2. 重新定时
  */
 void power_save_reset(void)
 {
@@ -72,21 +76,10 @@ void power_save_reset(void)
 }
 
 #ifdef WPM_ENABLE
-/**
- * @brief 重新启动自动关闭计时器,且仅通知屏幕退出省电模式,
- * 防止有连续敲击事件时指示灯常亮
- *
- */
-void power_save_oled_reset(void)
-{
-    if (power_save_mode) {
-        // 若当前已经处于睡眠模式,则触发退出事件
-        if (!tick_counter)
-	    notify_mode(PWR_SAVE_EXIT | PWR_SAVE_WPM_AUTO);
-
-         tick_counter = get_led_powersave_timeout();
-    }
-}
+#ifdef ANIMATION_ENABLE
+    extern bool anim_play_mode;
+#endif
+    extern bool wpm_monitor;
 #endif
 
 /**
@@ -96,16 +89,24 @@ void power_save_oled_reset(void)
 static void ps_event_handler(enum user_event event, void* arg)
 {
     if (event == USER_EVT_TICK) {
-        if (power_save_mode && tick_counter
+        if (power_save_mode && tick_counter) {
 #ifdef WPM_ENABLE
-	    && !get_current_wpm()
+	     if (
+#ifdef ANIMATION_ENABLE
+		 !anim_play_mode &&
 #endif
-	   ) {
-            tick_counter--;
+		 !wpm_monitor) {
+		 tick_counter--;
+	     } else if (!get_current_wpm())
+#endif
+	     {
+		 tick_counter--;
+	     }
+
             // 时间到了,触发省电模式
             if (tick_counter == 0)
                 notify_mode(PWR_SAVE_ENTER);
-        }
+	    }
     }
 }
 

@@ -33,6 +33,8 @@
 #include "keymap.h"
 #include "keymap_common.h"
 
+//打字速度监测，由用户选择决定亮屏规则
+bool wpm_monitor = false;
 // WPM Stuff
 static int16_t  current_wpm = 0;
 //static uint8_t last_wpm = 0;

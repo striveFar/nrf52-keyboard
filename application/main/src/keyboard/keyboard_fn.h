@@ -12,6 +12,7 @@ enum fn_keyboard_control {
     CONTROL_NKRO, // 切换NKRO状态
     CONTROL_BATTERY_PERCENTAGE, // 输出电池剩余电量
     CONTROL_ANIM_PLAY, // 动画显示开关
+    CONTROL_WPM_MONITOR, // 打字速度监测开关
     CONTROL_BOOTLOADER = 0x0F,// 进入bootloader
 };
 

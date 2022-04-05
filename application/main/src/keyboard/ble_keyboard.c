@@ -114,11 +114,22 @@ static void keyboard_sleep_handler(void* p_context)
     // trig TICK
     trig_event(USER_EVT_TICK, 0);
 #ifdef WPM_ENABLE
+#ifdef ANIMATION_ENABLE
+    extern bool anim_play_mode;
+#endif
+    extern bool wpm_monitor;
+    if (
+#ifdef ANIMATION_ENABLE
+	!anim_play_mode &&
+#endif
+	!wpm_monitor)
+	    return;
+
     uint8_t current_wpm = get_current_wpm();
     if (current_wpm) {
-	    power_save_oled_reset();
-	    /* for debug WPM */
-	    //trig_event(USER_EVT_WPM, (void *)(uint32_t)current_wpm);
+            power_save_reset();
+            /* for debug WPM */
+            //trig_event(USER_EVT_WPM, (void *)(uint32_t)current_wpm);
     }
 #endif
 }

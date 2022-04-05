@@ -32,6 +32,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 extern bool anim_play_mode;
 #endif
 
+#ifdef WPM_ENABLE
+extern bool wpm_monitor;
+#endif
+
 #ifdef NKRO_ENABLE
 
 #ifdef BOOTMAGIC_ENABLE
@@ -85,6 +89,11 @@ __attribute__((weak)) void action_function(keyrecord_t* record, uint8_t id, uint
 		anim_play_mode = !anim_play_mode;
 		trig_event_param(USER_EVT_ANIM,
 				 anim_play_mode ? ANIM_START : ANIM_STOP);
+                break;
+#endif
+#ifdef WPM_ENABLE
+	    case CONTROL_WPM_MONITOR: // 打字速度监测开关
+		wpm_monitor = !wpm_monitor;
                 break;
 #endif
             default:

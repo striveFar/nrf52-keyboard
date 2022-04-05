@@ -44,7 +44,9 @@ extern bool anim_play_mode;
 static void button_handler(void)
 {
 
+#ifdef ANIMATION_ENABLE
     if(!anim_play_mode)
+#endif
     {
         if (!nrf_gpio_pin_read(POWER_BUTTON)) //如果BUTTON输入低电平(按下)，则启动计数
         {

@@ -31,6 +31,7 @@ SSD1306_OLED = yes # 启用OLED
 ROTARY_ENCODER = yes # 启用编码器
 #ONBOARD_CMSIS_DAP = yes # 启用板载调试器
 
+# Note: ANIMATION_ENABLE 仅在WPM_ENABLE = yes时才能定义 */
 WPM_ENABLE = yes #启用打字速度统计
 ANIMATION_ENABLE = yes #启用动画显示
 

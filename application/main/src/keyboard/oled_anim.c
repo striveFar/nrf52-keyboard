@@ -149,7 +149,6 @@ void anim_timer_stop(void)
 
 static void start_handler(void* p_event_data, uint16_t event_size)
 {
-    anim_play_mode = true;
     ssd1306_clr();
     ssd1306_show_all();
     ssd1306_write_raw_P(prep[0]);
@@ -159,7 +158,6 @@ static void start_handler(void* p_event_data, uint16_t event_size)
 static void stop_handler(void* p_event_data, uint16_t event_size)
 {
     anim_timer_stop();
-    anim_play_mode = false;
     ssd1306_clr();
     ssd1306_show_all();
     update_status_bar();
@@ -171,9 +169,11 @@ static void anim_play_handler(enum user_event event, void* arg)
     case USER_EVT_ANIM:
         switch (arg2) {
         case ANIM_START: // 初始化
+	    anim_play_mode = true;
             app_sched_event_put(NULL, 0, start_handler);
             break;
 	case ANIM_STOP: // 关闭动画定时器
+	    anim_play_mode = false;
             app_sched_event_put(NULL, 0, stop_handler);
 	    break;
         default:

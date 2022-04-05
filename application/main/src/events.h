@@ -183,7 +183,7 @@ enum power_save_mode {
     PWR_SAVE_ENTER = BIT(3), // 进入省电模式
     PWR_SAVE_EXIT = BIT(4), // 退出省电模式
 #ifdef WPM_ENABLE
-    PWR_SAVE_WPM_AUTO = BIT(5), // 仅让OLED退出省电模式
+    PWR_SAVE_WPM_AUTO = BIT(5), // 仅让OLED退出省电模式,防止蓝牙模式下LED灯常量
 #endif
 };
 
