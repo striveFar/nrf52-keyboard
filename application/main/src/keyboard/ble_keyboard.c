@@ -41,7 +41,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endif
 
 APP_TIMER_DEF(m_keyboard_scan_timer); /**< keyboard scan timer. */
-APP_TIMER_DEF(m_keyboard_debounce_timer); /**< keyboard debounce timer. */
 APP_TIMER_DEF(m_keyboard_sleep_timer); /**< keyboard sleep timer. */
 
 
@@ -169,12 +168,6 @@ static void keyboard_timer_init(void)
         keyboard_scan_handler);
     APP_ERROR_CHECK(err_code);
 
-    // debounce timer
-    err_code = app_timer_create(&m_keyboard_debounce_timer,
-        APP_TIMER_MODE_SINGLE_SHOT,
-        keyboard_scan_handler);
-    APP_ERROR_CHECK(err_code);
-
     // init keyboard sleep counter timer
     err_code = app_timer_create(&m_keyboard_sleep_timer,
         APP_TIMER_MODE_REPEATED,
@@ -206,13 +199,6 @@ static void keyboard_wdt_init(void)
     nrf_drv_wdt_enable();
 }
 #endif
-
-void keyboard_debounce(void)
-{
-    // 启用消抖定时器，使用快速扫描间隔扫描
-    ret_code_t err_code = app_timer_start(m_keyboard_debounce_timer, DEBOUNCE_INTERVAL, NULL);
-    APP_ERROR_CHECK(err_code);
-}
 
 /**
  * @brief 启动键盘计时器

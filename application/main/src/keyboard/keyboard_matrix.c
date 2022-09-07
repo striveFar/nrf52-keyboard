@@ -39,12 +39,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "wpm.h"
 
 #ifndef DEBOUNCE
-#define DEBOUNCE 1
+#define DEBOUNCE 5
 #endif
-// 实际的消抖次数
-#define DEBOUNCE_RELOAD ((DEBOUNCE + KEYBOARD_SCAN_INTERVAL - 1) / KEYBOARD_SCAN_INTERVAL)
 
-static uint8_t debouncing = DEBOUNCE_RELOAD;
+static bool debouncing = false;
+static uint16_t debouncing_time = 0;
 
 /* matrix state(1:on, 0:off) */
 static matrix_row_t matrix[MATRIX_ROWS];
@@ -155,20 +154,17 @@ uint8_t matrix_scan(void)
                 debug_hex(debouncing);
                 dprint("\n");
             }
-            debouncing = DEBOUNCE_RELOAD;
+            debouncing = true;
+            debouncing_time = timer_read();
         }
         unselect_rows();
     }
 
-    if (debouncing) {
-        if (--debouncing) {
-            // no need to delay here manually, because we use the clock.
-            keyboard_debounce();
-        } else {
+    if (debouncing && timer_elapsed(debouncing_time) > DEBOUNCE) {
             for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
                 matrix[i] = matrix_debouncing[i];
             }
-        }
+	    debouncing = false;
     }
 
 #ifdef WPM_ENABLE
